@@ -61,6 +61,11 @@ Then run `publish/osx-arm64/SimpleAnalyzer` (`SimpleAnalyzer.exe` on Windows); k
 that folder together, as the graphics libraries sit beside the program. On macOS this is a
 plain executable, not a signed `.app`: start it from Terminal.
 
+**Mac app and DMG:** `scripts/make-dmg.sh` (or `scripts/make-dmg.sh osx-x64` for an Intel Mac)
+builds `artifacts/mac/SimpleAnalyzer.app` and `artifacts/SimpleAnalyzer-<version>-<arch>.dmg`. The app
+is ad-hoc signed, not notarized: the first time, right-click it and choose Open (or allow it in System
+Settings > Privacy & Security).
+
 **Server and port:** `--host` and `--port` set the TCI server for that run; they can also be set in
 the window, and are remembered (`~/Library/Application Support/SimpleAnalyzer/settings.json` on macOS,
 `~/.local/share/SimpleAnalyzer/` on Linux, `%LOCALAPPDATA%\SimpleAnalyzer\` on Windows). The default,

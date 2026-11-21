@@ -4,6 +4,7 @@
         xmlns:c="using:SimpleAnalyzer.Controls"
         x:Class="SimpleAnalyzer.Views.MainWindow"
         x:DataType="vm:MainViewModel"
+        Icon="avares://SimpleAnalyzer/Assets/icon.png"
         Title="SimpleAnalyzer" Width="1100" Height="680" MinWidth="720" MinHeight="440"
         WindowStartupLocation="CenterScreen">
   <DockPanel Margin="10">
