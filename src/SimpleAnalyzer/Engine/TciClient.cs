@@ -13,7 +13,7 @@ public sealed record RadioState(
     long Rx2Hz, string Rx2Mode,
     long TxHz, bool Transmitting, int TxRx, bool Tune,
     int? TxFilterLow, int? TxFilterHigh, double AlcDb,
-    long DdsHz, int IqRate, DateTime LastIq);
+    long DdsHz, int IqRate, DateTime LastIq, DateTime ReadyAt);
 
 /// <summary>
 /// A listen-only TCI client: it receives RX1's IQ and follows the radio's frequency, mode,
@@ -79,7 +79,7 @@ public sealed class TciClient : IDisposable
     private int _iqRate, _serverRate, _askedRate;
     private int? _txLow, _txHigh;
     private double _alcDb = double.NaN;
-    private DateTime _alcAt, _lastIq;
+    private DateTime _alcAt, _lastIq, _readyAt;
 
     public event IqHandler? IqReceived;
 
@@ -104,7 +104,7 @@ public sealed class TciClient : IDisposable
                 int txRx = _trx[0] ? 0 : _trx[1] ? 1 : -1;
                 return new(_connected, _device, _error,
                     _vfo[0], _mode[0], _filterLow[0], _filterHigh[0], _vfo[1], _mode[1],
-                    _txHz, txRx >= 0, Math.Max(txRx, 0), _tune, _txLow, _txHigh, alc, _dds, _iqRate, _lastIq);
+                    _txHz, txRx >= 0, Math.Max(txRx, 0), _tune, _txLow, _txHigh, alc, _dds, _iqRate, _lastIq, _readyAt);
             }
         }
     }
@@ -231,6 +231,7 @@ public sealed class TciClient : IDisposable
                         break;
                     case "ready":
                         _connected = ready = true;
+                        _readyAt = DateTime.UtcNow;
                         break;
                     case "vfo" when args.Length >= 3 && Receiver(args[0]) is int rx && Int(args[1]) == 0:
                         _vfo[rx] = Long(args[2]);

@@ -35,6 +35,7 @@ public sealed partial class MainViewModel : ObservableObject
     private static readonly IBrush Red = new SolidColorBrush(Color.Parse("#E5484D"));
     private static readonly double[] Seconds = [0.05, 0.2, 1, 5];
     private const int Columns = 900;
+    private static readonly TimeSpan NoIqAfter = TimeSpan.FromSeconds(5);
     private const int FindingsEvery = 6;             // ticks: readings change a few times a second, not fifteen
 
     private readonly SignalAnalysis _analysis = new();
@@ -190,6 +191,15 @@ public sealed partial class MainViewModel : ObservableObject
             ? $"Transmitting  ·  {t.Hz / 1e6:0.000000} MHz {t.Mode}  ·  your signal as RX1 hears it"
             : $"Receiving on {t.Slice}  ·  {t.Hz / 1e6:0.000000} MHz {t.Mode}";
 
+        if (s.LastIq == default && DateTime.UtcNow - s.ReadyAt > NoIqAfter)
+        {
+            // iq_start is optional in TCI: a server for a radio with no IQ output (one that only
+            // streams demodulated audio) ignores it, as the protocol says.
+            string who = s.Device.Length > 0 ? s.Device : "This TCI server";
+            Idle($"{who} isn't sending IQ. The analyser needs the receiver's IQ stream, which TCI servers for SDRs provide; "
+                + "a radio whose TCI carries only demodulated audio can't be analysed.");
+            return;
+        }
         int rate = _analysis.InputRate;
         if (s.DdsHz <= 0 || rate == 0 || DateTime.UtcNow - s.LastIq > TimeSpan.FromSeconds(2))
         {
