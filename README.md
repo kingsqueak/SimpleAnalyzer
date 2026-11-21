@@ -38,15 +38,34 @@ of writing.
 - TCI carries no mic level here, so mic advice is left out.
 
 ## Build and run
-.NET 10. On the Mac Studio the .NET 10 SDK is in `/usr/local/share/dotnet` (Homebrew's `dotnet` is
-.NET 11), so put it first:
+There are no prebuilt releases; build it from source. It runs on macOS, Linux and Windows.
 
-    export PATH=/usr/local/share/dotnet:$PATH
-    dotnet run --project src/SimpleAnalyzer -- --port 50001
+**You need** the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (10.0.100 or a
+later 10.0 feature band; `global.json` pins it). Check with `dotnet --list-sdks`. If a newer major
+version (.NET 11) is first on your PATH and 10 is installed elsewhere, put the .NET 10 one first,
+e.g. on macOS `export PATH=/usr/local/share/dotnet:$PATH`. On Linux, Avalonia also needs the usual
+desktop libraries (`libx11-6`, `libice6`, `libsm6`, `libfontconfig1`), present on most desktops.
 
-`--host` and `--port` override the saved server; the host and port can also be set in the window
-and are remembered (in `~/Library/Application Support/SimpleAnalyzer/settings.json` on macOS). The
-default is 127.0.0.1:40001 (the ExpertSDR3 default); Thetis and this ExpertSDR3 install use 50001.
+**Run from the source:**
+
+    git clone https://github.com/kingsqueak/SimpleAnalyzer.git
+    cd SimpleAnalyzer
+    dotnet run --project src/SimpleAnalyzer -c Release -- --host 127.0.0.1 --port 40001
+
+**Make a standalone copy** that runs without .NET installed (pick your platform's runtime:
+`osx-arm64`, `osx-x64`, `linux-x64`, `linux-arm64`, `win-x64`):
+
+    dotnet publish src/SimpleAnalyzer -c Release -r osx-arm64 --self-contained -p:PublishSingleFile=true -o publish/osx-arm64
+
+Then run `publish/osx-arm64/SimpleAnalyzer` (`SimpleAnalyzer.exe` on Windows); keep the files in
+that folder together, as the graphics libraries sit beside the program. On macOS this is a
+plain executable, not a signed `.app`: start it from Terminal.
+
+**Server and port:** `--host` and `--port` set the TCI server for that run; they can also be set in
+the window, and are remembered (`~/Library/Application Support/SimpleAnalyzer/settings.json` on macOS,
+`~/.local/share/SimpleAnalyzer/` on Linux, `%LOCALAPPDATA%\SimpleAnalyzer\` on Windows). The default,
+127.0.0.1:40001, is ExpertSDR3's default port; Thetis uses 50001. Turn the TCI server on in your SDR
+program first.
 
 ## Benchmark
 `tools/signal-bench` streams model AM signals of known depth through the analysis code and checks

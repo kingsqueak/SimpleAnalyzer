@@ -6,7 +6,6 @@ what a real band adds (noise, a neighbour 5 kHz away, a dial off the carrier, fa
 that has just come up), streams them through the analyser as TCI would, and takes the reading several
 times a second as the window does. Each line shows the lowest, middle and highest reading against the truth.
 
-    export PATH=/usr/local/share/dotnet:$PATH
     dotnet run -c Release
 
 It exits non-zero if a case is outside its tolerance. The tolerances are 5 points on clean signals and
